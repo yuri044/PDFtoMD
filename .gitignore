@@ -1,0 +1,15 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Local Claude Code settings and AI assistant internals
+.claude/
+.agents/

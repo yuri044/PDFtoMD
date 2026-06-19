@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF → Markdown</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>PDF → Markdown</h1>
+    <p>Upload a PDF and download a <code>.zip</code> containing the Markdown file and all extracted images.</p>
+
+    <div id="drop-zone">
+      <input type="file" id="file-input" accept=".pdf" hidden />
+      <label for="file-input">
+        <span id="drop-label">Drop PDF here, or click to browse</span>
+      </label>
+    </div>
+
+    <button id="convert-btn" disabled>Convert to Markdown</button>
+    <p id="status"></p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f5f4f0;
+  color: #1a1a18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+main {
+  background: #ffffff;
+  border: 1px solid #dddcd8;
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 480px;
+  width: 100%;
+}
+
+h1 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  color: #6b6a65;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+code {
+  background: #f0eeea;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+#drop-zone {
+  border: 1.5px dashed #c0bfba;
+  border-radius: 8px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 1rem;
+}
+
+#drop-zone:hover,
+#drop-zone.drag-over {
+  border-color: #534AB7;
+  background: #EEEDFE;
+}
+
+#drop-zone label { cursor: pointer; }
+
+#drop-label {
+  font-size: 0.9rem;
+  color: #6b6a65;
+}
+
+#drop-label.has-file {
+  color: #3C3489;
+  font-weight: 500;
+}
+
+#convert-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #534AB7;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#convert-btn:hover:not(:disabled) { background: #3C3489; }
+#convert-btn:disabled { background: #b4b2a9; cursor: not-allowed; }
+
+#status {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  min-height: 1.2rem;
+  text-align: center;
+}
+
+#status.error   { color: #a32d2d; }
+#status.success { color: #0f6e56; }
+#status.loading { color: #6b6a65; }
