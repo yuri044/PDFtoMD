@@ -89,6 +89,115 @@ code {
 #convert-btn:hover:not(:disabled) { background: #3C3489; }
 #convert-btn:disabled { background: #b4b2a9; cursor: not-allowed; }
 
+/* ── File list ────────────────────────────────────────────────────────────── */
+
+/* Container for all selected PDFs. Hidden when empty via :empty.
+   Scrolls if the user queues many files so the layout doesn't blow out. */
+#file-list {
+  list-style: none;
+  margin: 0 0 1rem;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid transparent; /* border appears only when the list has items */
+  border-radius: 6px;
+}
+
+/* Show the border once the list is populated */
+#file-list:not(:empty) {
+  border-color: #e4e3df;
+}
+
+/* Each row: file name on the left, status badge on the right */
+#file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #f0eeea;
+}
+
+#file-list li:last-child {
+  border-bottom: none;
+}
+
+/* Remove button: small ×, sits to the right of the status badge.
+   Transparent background keeps it subtle until hovered. */
+.remove-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: #b4b2a9;
+  padding: 0 0.1rem;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.remove-btn:hover:not(:disabled) {
+  color: #a32d2d;
+  background: #fdecea;
+}
+
+.remove-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+/* Truncate long filenames with an ellipsis so the badge stays visible */
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  color: #1a1a18;
+}
+
+/* ── Per-file status badge ────────────────────────────────────────────────── */
+
+/* Base badge: pill-shaped, right-aligned, never wraps */
+.file-status {
+  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.15em 0.55em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Waiting to be processed */
+.file-status.pending {
+  background: #f0eeea;
+  color: #6b6a65;
+}
+
+/* Currently being sent to the backend */
+.file-status.loading {
+  background: #eeedfe;
+  color: #3C3489;
+}
+
+/* ZIP downloaded successfully */
+.file-status.success {
+  background: #e6f4f0;
+  color: #0f6e56;
+}
+
+/* Conversion or network error */
+.file-status.error {
+  background: #fdecea;
+  color: #a32d2d;
+  /* Error messages can be long — allow wrapping so the text isn't cut off */
+  white-space: normal;
+  text-align: right;
+  max-width: 160px;
+}
+
+/* ── Global status line (below the Convert All button) ───────────────────── */
+
 #status {
   margin-top: 1rem;
   font-size: 0.85rem;

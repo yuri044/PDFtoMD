@@ -12,13 +12,19 @@
     <p>Upload a PDF and download a <code>.zip</code> containing the Markdown file and all extracted images.</p>
 
     <div id="drop-zone">
-      <input type="file" id="file-input" accept=".pdf" hidden />
+      <!-- multiple allows selecting several PDFs at once in the file picker -->
+      
+      <input type="file" id="file-input" accept=".pdf" multiple hidden />
       <label for="file-input">
-        <span id="drop-label">Drop PDF here, or click to browse</span>
+        <span id="drop-label">Drop PDFs here, or click to browse</span>
       </label>
     </div>
 
-    <button id="convert-btn" disabled>Convert to Markdown</button>
+    <!-- Populated by app.js: one <li> per selected PDF showing name + status -->
+    <ul id="file-list"></ul>
+
+    <!-- Disabled until at least one PDF is selected -->
+    <button id="convert-btn" disabled>Convert All</button>
     <p id="status"></p>
   </main>
   <script src="app.js"></script>
