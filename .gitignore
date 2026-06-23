@@ -10,6 +10,9 @@ __pycache__/
 venv/
 env/
 
+# IIS deployment config — machine-specific, not committed
+web.config
+
 # Local Claude Code settings and AI assistant internals
 .claude/
 .agents/
