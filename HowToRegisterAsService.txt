@@ -20,4 +20,15 @@ Start-Service PDFtoMD-backend
 Get-Service PDFtoMD-backend | Select-Object Name, Status
 
 
+//Create a log folder
 New-Item -ItemType Directory -Force C:\WebSite\PDFToMD\logs
+
+
+Set-WebConfigurationProperty -Filter "system.applicationHost/sites/site[@name='PDFtoMD-backend']/application[@path='/']/virtualDirectory[@path='/']" -Name physicalPath -Value "C:\WebSite\PDFToMD\backend"
+iisreset
+
+C:\Python313\python.exe -m pip install uvicorn fastapi pymupdf python-multipart --target "C:\Python313\Lib\site-packages" --upgrade
+
+
+
+net stop w3svc && net start w3svc

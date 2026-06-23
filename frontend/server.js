@@ -58,8 +58,7 @@ app.post('/api/convert', upload.single('pdf'), async (req, res) => {
   }
 });
 
-//Temporaly set port as 5555 
-const PORT = process.env.PORT || 5555;
+const PORT = process.env.PORT || 5556;
 app.listen(PORT, () => {
   console.log(`Frontend: http://localhost:${PORT}`);
 });

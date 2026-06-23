@@ -16,3 +16,10 @@ web.config
 # Local Claude Code settings and AI assistant internals
 .claude/
 .agents/
+docs/
+.CLAUDE.md
+
+# Logs 
+logs/
+
+HowToRegisterAsService.txt

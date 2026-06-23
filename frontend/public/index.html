@@ -5,28 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PDF → Markdown</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-  <main>
-    <h1>PDF → Markdown</h1>
-    <p>Upload a PDF and download a <code>.zip</code> containing the Markdown file and all extracted images.</p>
+  <header class="app-header">
+    <span class="app-brand">PDF → Markdown</span>
+    <nav class="tabs">
+      <button class="tab active" data-tab="convert">Convert</button>
+      <button class="tab" data-tab="editor">Editor</button>
+    </nav>
+  </header>
 
-    <div id="drop-zone">
-      <!-- multiple allows selecting several PDFs at once in the file picker -->
-      
-      <input type="file" id="file-input" accept=".pdf" multiple hidden />
-      <label for="file-input">
-        <span id="drop-label">Drop PDFs here, or click to browse</span>
-      </label>
+  <!-- ── Convert view ─────────────────────────────────────────────── -->
+  <div id="view-convert" class="view active">
+    <div class="convert-card">
+      <p class="card-subtitle">Upload PDFs and get a <code>.zip</code> with Markdown and extracted images.</p>
+
+      <div id="drop-zone">
+        <input type="file" id="file-input" accept=".pdf" multiple hidden />
+        <label for="file-input">
+          <span id="drop-label">Drop PDFs here, or click to browse</span>
+        </label>
+      </div>
+
+      <ul id="file-list"></ul>
+
+      <button id="convert-btn" disabled>Convert All</button>
+      <p id="status"></p>
     </div>
+  </div>
 
-    <!-- Populated by app.js: one <li> per selected PDF showing name + status -->
-    <ul id="file-list"></ul>
+  <!-- ── Editor view ──────────────────────────────────────────────── -->
+  <div id="view-editor" class="view">
+    <div class="editor-toolbar">
+      <span id="editor-filename" class="editor-filename">No file loaded</span>
+      <div class="editor-actions">
+        <input type="file" id="md-file-input" accept=".md" hidden />
+        <input type="file" id="folder-input" webkitdirectory hidden />
+        <button class="toolbar-btn" id="open-file-btn">Open .md File</button>
+        <button class="toolbar-btn" id="open-folder-btn">Open Folder</button>
+        <button class="toolbar-btn" id="download-selected-btn" disabled>Download Selected</button>
+        <button class="toolbar-btn primary" id="download-all-btn" disabled>Download All</button>
+      </div>
+      <span id="editor-status" class="editor-status"></span>
+    </div>
+    <div class="editor-split">
+      <aside class="editor-files">
+        <ul id="file-tabs"></ul>
+      </aside>
+      <textarea id="md-editor" spellcheck="false" placeholder="Markdown will appear here after conversion or opening a file…"></textarea>
+      <div id="md-preview" class="markdown-body"></div>
+    </div>
+  </div>
 
-    <!-- Disabled until at least one PDF is selected -->
-    <button id="convert-btn" disabled>Convert All</button>
-    <p id="status"></p>
-  </main>
+  <script src="sidebar.js"></script>
+  <script src="editor.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
