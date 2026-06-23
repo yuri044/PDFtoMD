@@ -1,0 +1,23 @@
+# Install NSSM
+winget install NSSM.NSSM
+
+# Register the Node.js frontend
+nssm install PDFtoMD-frontend "C:\Program Files\nodejs\node.exe" "C:\WebSite\PDFToMD\frontend\server.js"
+nssm set PDFtoMD-frontend AppDirectory "C:\WebSite\PDFToMD\frontend"
+nssm set PDFtoMD-frontend AppEnvironmentExtra PORT=5555
+
+# Register the Python backend
+nssm install PDFtoMD-backend "C:\WebSite\PDFToMD\backend\.venv\Scripts\python.exe" "-m uvicorn main:app --host 127.0.0.1 --port 8000"
+nssm set PDFtoMD-backend AppDirectory "C:\WebSite\PDFToMD\backend"
+
+# Start both
+nssm start PDFtoMD-frontend
+nssm start PDFtoMD-backend
+
+
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\PDFtoMD-backend\Parameters" -Name "Application" -Value "C:\Python313\python.exe"
+Start-Service PDFtoMD-backend
+Get-Service PDFtoMD-backend | Select-Object Name, Status
+
+
+New-Item -ItemType Directory -Force C:\WebSite\PDFToMD\logs

@@ -5,7 +5,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from converter import pdf_to_markdown
 
-app = FastAPI(title="PDF→Markdown API", version="1.1.0")
+app = FastAPI(title="PDF→Markdown API", version="1.2.0")
 
 MAX_PDF_SIZE = 20 * 1024 * 1024  # 20 MB
 
