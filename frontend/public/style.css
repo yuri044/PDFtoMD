@@ -535,3 +535,25 @@ code {
 
 .markdown-body strong { font-weight: 600; }
 .markdown-body em { font-style: italic; }
+
+/* ── Docs view ───────────────────────────────────────────────────── */
+/* Content is rendered from docs.md into #docs-content, then styled by the
+   shared .markdown-body rules above. This block only handles page layout. */
+
+/* align-items centers the page horizontally; avoid justify-content: center —
+   on a column flex container it clips the top of content taller than the view. */
+#view-docs {
+  overflow-y: auto;
+  padding: 2.5rem 1.5rem;
+  align-items: center;
+}
+
+.docs-page {
+  flex-shrink: 0;        /* keep full content height so the view scrolls, not compresses */
+  max-width: 760px;
+  width: 100%;
+}
+
+.docs-page h1:first-child { margin-top: 0; }
+
+.docs-error { color: var(--error); }
