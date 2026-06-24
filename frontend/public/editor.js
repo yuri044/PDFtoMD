@@ -6,6 +6,7 @@
 const tabButtons  = document.querySelectorAll('.tab');
 const viewConvert = document.getElementById('view-convert');
 const viewEditor  = document.getElementById('view-editor');
+const viewDocs    = document.getElementById('view-docs');
 
 // ─── DOM: editor toolbar ─────────────────────────────────────────────────────
 const editorFilenameEl   = document.getElementById('editor-filename');
@@ -20,6 +21,47 @@ const folderInput        = document.getElementById('folder-input');
 // ─── DOM: split pane (the file list is owned by the Sidebar component) ─────────
 const mdEditorEl  = document.getElementById('md-editor');
 const mdPreviewEl = document.getElementById('md-preview');
+
+// ─── Editor adapter (CodeMirror) ──────────────────────────────────────────────
+// Wrap CodeMirror so the rest of this file talks to a tiny, swappable surface:
+// getValue / setValue / onChange / onScroll. The textarea remains the mount
+// point and a graceful fallback if CodeMirror fails to load from the CDN.
+const editor = (() => {
+  // Fallback: drive the plain textarea with the same interface. Used if
+  // CodeMirror is missing OR fails to initialize, so the UI never bricks.
+  const textareaAdapter = () => ({
+    getValue: () => mdEditorEl.value,
+    setValue: (v) => { mdEditorEl.value = v; },
+    onChange: (fn) => mdEditorEl.addEventListener('input', fn),
+    onScroll: (fn) => mdEditorEl.addEventListener('scroll', fn),
+    scrollEl: mdEditorEl,
+  });
+
+  if (typeof CodeMirror === 'undefined') return textareaAdapter();
+
+  try {
+    const cm = CodeMirror.fromTextArea(mdEditorEl, {
+      mode: 'markdown',      // colors headings, bold, italic, lists, code, links
+      lineNumbers: true,
+      lineWrapping: true,
+      spellcheck: false,
+      viewportMargin: Infinity,
+    });
+
+    return {
+      getValue: () => cm.getValue(),
+      setValue: (v) => cm.setValue(v),
+      onChange: (fn) => cm.on('change', fn),
+      onScroll: (fn) => cm.on('scroll', fn),
+      scrollEl: cm.getScrollerElement(),
+      refresh: () => cm.refresh(),  // recompute layout after the pane becomes visible
+      cm,
+    };
+  } catch (err) {
+    console.error('CodeMirror init failed — falling back to plain textarea:', err);
+    return textareaAdapter();
+  }
+})();
 
 // ─── State ───────────────────────────────────────────────────────────────────
 let documents   = [];       // [{ filename, markdown, imageMap, dirty }]
@@ -41,6 +83,13 @@ function switchTab(name) {
   tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
   viewConvert.classList.toggle('active', name === 'convert');
   viewEditor.classList.toggle('active', name === 'editor');
+  viewDocs.classList.toggle('active', name === 'docs');
+
+  // CodeMirror measures wrong while hidden — recompute layout once visible.
+  if (name === 'editor' && editor.refresh) editor.refresh();
+
+  // Render the Markdown reference on first visit (cached thereafter).
+  if (name === 'docs') loadDocs();
 }
 
 tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
@@ -103,7 +152,7 @@ function addDocument(filename, markdown, imageMap = {}) {
 // before switching files so in-progress edits are not lost.
 function saveActiveDoc() {
   if (activeIndex < 0) return;
-  documents[activeIndex].markdown = mdEditorEl.value;
+  documents[activeIndex].markdown = editor.getValue();
 }
 
 function switchTo(index) {
@@ -112,13 +161,14 @@ function switchTo(index) {
   activeIndex = index;
 
   const doc = documents[index];
-  mdEditorEl.value = doc.markdown;
+  editor.setValue(doc.markdown);
   editorFilenameEl.textContent = doc.filename;
   renderPreview();
   Sidebar.setActive(activeIndex);
 }
 
 // ─── Dirty tracking ────────────────────────────────────────────────────────────
+//This code tracks if any line of texts were modified or deleted. 
 
 function markActiveDirty() {
   if (activeIndex < 0) return;
@@ -128,11 +178,23 @@ function markActiveDirty() {
   Sidebar.markDirty(activeIndex);
 }
 
+// ─── Unsaved-changes guard ──────────────────────────────────────────────────────
+
+// Warn before refresh/close/navigation while any document holds unedited work.
+// The active doc's in-progress edits live in CodeMirror, so sync them into the
+// model first, then let the browser show its native "Leave site?" dialog.
+window.addEventListener('beforeunload', (e) => {
+  saveActiveDoc();
+  if (documents.some(doc => doc.dirty)) {
+    e.preventDefault();   // modern browsers show the native "Leave site?" dialog
+  }
+});
+
 // ─── Live preview ─────────────────────────────────────────────────────────────
 
 function renderPreview() {
   const imageMap = activeIndex >= 0 ? documents[activeIndex].imageMap : {};
-  let md = mdEditorEl.value;
+  let md = editor.getValue();
   // Swap relative image paths for blob URLs so the preview can render them
   md = md.replace(/!\[([^\]]*)\]\(images\/([^)\s]+)\)/g, (match, alt, fname) => {
     const url = imageMap[fname];
@@ -141,7 +203,7 @@ function renderPreview() {
   mdPreviewEl.innerHTML = marked.parse(md);
 }
 
-mdEditorEl.addEventListener('input', () => {
+editor.onChange(() => {
   markActiveDirty();
   renderPreview();
 });
@@ -149,11 +211,12 @@ mdEditorEl.addEventListener('input', () => {
 // ─── Synced scroll ───────────────────────────────────────────────────────────
 
 let syncingScroll = false;
+const editorScrollEl = editor.scrollEl;
 
-mdEditorEl.addEventListener('scroll', () => {
+editorScrollEl.addEventListener('scroll', () => {
   if (syncingScroll) return;
   syncingScroll = true;
-  const ratio = mdEditorEl.scrollTop / Math.max(1, mdEditorEl.scrollHeight - mdEditorEl.clientHeight);
+  const ratio = editorScrollEl.scrollTop / Math.max(1, editorScrollEl.scrollHeight - editorScrollEl.clientHeight);
   mdPreviewEl.scrollTop = ratio * (mdPreviewEl.scrollHeight - mdPreviewEl.clientHeight);
   requestAnimationFrame(() => { syncingScroll = false; });
 });
@@ -162,7 +225,7 @@ mdPreviewEl.addEventListener('scroll', () => {
   if (syncingScroll) return;
   syncingScroll = true;
   const ratio = mdPreviewEl.scrollTop / Math.max(1, mdPreviewEl.scrollHeight - mdPreviewEl.clientHeight);
-  mdEditorEl.scrollTop = ratio * (mdEditorEl.scrollHeight - mdEditorEl.clientHeight);
+  editorScrollEl.scrollTop = ratio * (editorScrollEl.scrollHeight - editorScrollEl.clientHeight);
   requestAnimationFrame(() => { syncingScroll = false; });
 });
 
