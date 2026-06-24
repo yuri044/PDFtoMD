@@ -20,7 +20,7 @@ def pdf_to_markdown(pdf_bytes: bytes) -> tuple[str, list[dict]]:
     pages: list[str] = []
     ##Store images in a list so that they can be joined together later
     images: list[dict] = []
-    ##Xrefs tracks which images extracted so far
+    ##Xrefs tracks which images extracted so far by indexing
     seen_xrefs: set[int] = set()
 
     for page_num, page in enumerate(doc):
