@@ -14,6 +14,7 @@
     <nav class="tabs">
       <button class="tab active" data-tab="convert">Convert</button>
       <button class="tab" data-tab="editor">Editor</button>
+      <button class="tab" data-tab="docs">Docs</button>
     </nav>
   </header>
 
@@ -59,7 +60,13 @@
     </div>
   </div>
 
+  <!-- ── Docs view — content rendered from docs.md at runtime ───────── -->
+  <div id="view-docs" class="view">
+    <div id="docs-content" class="docs-page markdown-body"></div>
+  </div>
+
   <script src="sidebar.js"></script>
+  <script src="docs.js"></script>
   <script src="editor.js"></script>
   <script src="app.js"></script>
 </body>

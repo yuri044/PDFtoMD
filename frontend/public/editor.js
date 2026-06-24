@@ -6,6 +6,7 @@
 const tabButtons  = document.querySelectorAll('.tab');
 const viewConvert = document.getElementById('view-convert');
 const viewEditor  = document.getElementById('view-editor');
+const viewDocs    = document.getElementById('view-docs');
 
 // ─── DOM: editor toolbar ─────────────────────────────────────────────────────
 const editorFilenameEl   = document.getElementById('editor-filename');
@@ -41,6 +42,10 @@ function switchTab(name) {
   tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
   viewConvert.classList.toggle('active', name === 'convert');
   viewEditor.classList.toggle('active', name === 'editor');
+  viewDocs.classList.toggle('active', name === 'docs');
+
+  // Render the Markdown reference on first visit (cached thereafter).
+  if (name === 'docs') loadDocs();
 }
 
 tabButtons.forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.tab)));
